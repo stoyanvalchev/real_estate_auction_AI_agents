@@ -24,7 +24,7 @@ def chunk_markdown(text: str, property_id: str) -> list[dict]:
     """
     lines = text.strip().split("\n")
 
-    # Grab the header block (everything before the first ## section)
+    # Look at the header lines
     header_lines = []
     for line in lines:
         if line.startswith("## "):
@@ -46,7 +46,7 @@ def chunk_markdown(text: str, property_id: str) -> list[dict]:
 
     chunks = []
     for i, section in enumerate(sections):
-        # Skip the header block itself — it's repeated as context in each chunk
+
         if section == header:
             continue
         chunks.append({

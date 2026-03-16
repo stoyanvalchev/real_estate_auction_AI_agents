@@ -66,6 +66,17 @@ ollama pull llama3.1:8b
 
 > This may take a few minutes depending on your connection speed.
 
+### 3. Create a `.env` File
+
+> ⚠️ **This step is required.** The project will not run without a `.env` file in the root directory.
+
+Create a `.env` file in the root of the project and set the following variables:
+
+```env
+MODEL=ollama/llama3.1:8b
+OLLAMA_BASE_URL=http://localhost:11434
+```
+
 ### Hardware Requirements
 
 | Spec | Requirement |
@@ -104,11 +115,7 @@ Describe the property you are looking for in plain English and the system will r
 apartment in Geo Milev under 130 000 EUR
 ```
 
-Results are returned with explanations and saved to:
-
-```
-data/search_results/search_result.json
-```
+Results are returned with explanations and saved to `data/search_results/search_result.json`.
 
 ---
 
@@ -118,11 +125,7 @@ In Auction Mode, AI buyer agents evaluate a selected property and place competit
 
 ### Configuration
 
-Auction parameters can be customised in:
-
-```
-src/real_estate_auction/crews/auction_crew/config/auction.yaml
-```
+Auction parameters can be customised in `src/real_estate_auction/crews/auction_crew/config/auction.yaml`:
 
 | Parameter | Description |
 |-----------|-------------|
@@ -132,8 +135,4 @@ src/real_estate_auction/crews/auction_crew/config/auction.yaml
 
 ### Results
 
-The full auction history is saved to:
-
-```
-data/auction_results/auction_result.json
-```
+The full auction history is saved to `data/auction_results/auction_result.json`. 
