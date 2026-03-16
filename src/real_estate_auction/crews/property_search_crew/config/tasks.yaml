@@ -1,0 +1,57 @@
+property_search_task:
+  description: >
+    Search Sofia real estate for the user's request.
+
+    User request: {user_query}
+    Context: {conversation_context}
+
+    Use the property_search tool exactly once.
+
+    You must reason about relevance, ranking, and tradeoffs, but you must NOT change any factual property data.
+
+    Grounding rules:
+    - Return up to 3 grounded recommendations based ONLY on the tool results.
+    - Do NOT invent properties.
+    - Only include properties whose exact property_id appeared in the tool output.
+    - Each recommendation MUST have a different property_id. Never repeat the same property twice.
+    - If fewer than 3 distinct properties were returned by the tool, return only those.
+    - If you don't find any relevant properties, return an empty list of recommendations and explain that in the summary.
+    - For every recommendation, property_id, title, district, property_type, price_eur, size_sqm, and bedrooms must be copied exactly from the same single property in the tool output.
+    - Never rewrite, shorten, normalize, paraphrase, round, estimate, or improve factual fields.
+    - Never combine facts from multiple properties.
+    - Never infer missing numeric values.
+    - If a factual field is missing in the tool output, return it exactly as shown there if present; otherwise do not invent a replacement.
+
+    Reasoning rules:
+    - why_it_matches and tradeoffs are the only fields where you may reason or summarize.
+    - why_it_matches must explain why the property fits the user's request, based only on facts from that same property.
+    - tradeoffs must describe a real compromise or limitation compared with the user's request or compared with stronger matches.
+    - tradeoffs should describe a real drawback, limitation, or compromise relative to the user's request or to stronger matches.
+    - If no meaningful tradeoff is visible from the tool result, use a neutral but truthful tradeoff such as "Closer to the budget ceiling than some other options" or "Fewer distinguishing advantages than the strongest match."
+    - Never describe a positive feature as a tradeoff.
+    - If a property is nearby to the requested district but not in the exact requested district, say that clearly in tradeoffs.
+    - If a property matches the budget and type but misses the exact district, explain that clearly instead of pretending it is an exact match.
+    - Prefer exact matches over nearby alternatives when ranking.
+    - If exact matches exist, nearby alternatives should be ranked lower and described as nearby alternatives.
+    - The summary must reflect the final recommendations exactly. Do not say all properties are in a district if one is only nearby.
+
+    Output rules:
+    - Return exactly one flat JSON object.
+    - Do not wrap the JSON in markdown fences.
+    - Do not add any text before or after the JSON.
+
+    Return exactly one flat JSON object with these two fields:
+    - summary: a non-empty string (2-3 sentences) describing what was found and how well it matches the request
+    - recommendations: a list of up to 3 objects, each containing:
+        - property_id   (string, copied exactly from the tool output)
+        - title         (string, copied exactly from the tool output)
+        - district      (string, copied exactly from the tool output)
+        - property_type (string, copied exactly from the tool output)
+        - price_eur     (integer, copied exactly from the tool output)
+        - size_sqm      (integer, copied exactly from the tool output)
+        - bedrooms      (integer, copied exactly from the tool output)
+        - why_it_matches (string)
+        - tradeoffs     (string)
+  expected_output: >
+    A flat JSON object with a non-empty summary and up to 3 unique recommendations. All factual property fields must be copied exactly from the tool output, while why_it_matches and tradeoffs may contain reasoning grounded in that same property's facts.
+  agent: property_search_specialist

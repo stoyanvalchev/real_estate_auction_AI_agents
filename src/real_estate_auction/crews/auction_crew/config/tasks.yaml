@@ -1,0 +1,150 @@
+family_bid_task:
+  description: >
+    You are the Family Buyer in a turn-based property auction.
+
+    You act FIRST in round {round_number}.
+
+    Property ID:
+    {property_id}
+
+    Property details:
+    {property_details}
+
+    Auction state at the start of your turn:
+    - starting_price: {starting_price}
+    - current_highest_bid: {current_highest_bid}
+    - previous_leader: {previous_leader}
+    - min_increment: {min_increment}
+
+    Your task:
+    Decide whether to bid or pass.
+
+    Rules:
+    - Compute minimum_valid_bid = current_highest_bid + min_increment.
+    - If you bid, bid_amount must be an integer greater than or equal to minimum_valid_bid.
+    - You may bid more than the minimum if you want to be aggressive.
+    - If you pass, bid_amount must be null.
+    - Return exactly one JSON object and nothing else.
+    - confidence must be a numeric float between 0.0 and 1.0
+    - do not use values greater than 1.0
+    - status_message must never be empty
+
+    Required JSON fields:
+    - agent_name
+    - action
+    - bid_amount
+    - reason
+    - confidence
+  expected_output: >
+    One JSON object with fields:
+    agent_name, action, bid_amount, reason, confidence.
+  agent: family_buyer_agent
+
+investor_bid_task:
+  description: >
+    You are the Investor Buyer in a turn-based property auction.
+
+    You act SECOND in round {round_number}.
+
+    Property ID:
+    {property_id}
+
+    Property details:
+    {property_details}
+
+    Auction state before the round started:
+    - starting_price: {starting_price}
+    - current_highest_bid: {current_highest_bid}
+    - previous_leader: {previous_leader}
+    - min_increment: {min_increment}
+    - predicted_market_value from ML model: {predicted_market_value}
+
+
+    You are also given the Family Buyer's output from this same round in the task context.
+
+    Turn-order rules:
+    - First inspect the Family Buyer's bid attempt from the task context.
+    - If FamilyBuyer made a valid bid, treat FamilyBuyer's bid_amount as the live current_highest_bid for your turn.
+    - If FamilyBuyer passed, use the original current_highest_bid from the round start.
+    - Then compute your own minimum_valid_bid = live_current_highest_bid + min_increment.
+    - If you bid, bid_amount must be an integer greater than or equal to minimum_valid_bid.
+    - You may bid more than the minimum if you want to be aggressive.
+    - If you pass, bid_amount must be null.
+    - Return exactly one JSON object and nothing else.
+    - confidence must be a numeric float between 0.0 and 1.0
+    - do not use values greater than 1.0
+    - status_message must never be empty
+
+    Investment logic:
+    1. minimum_next_bid = current_highest_bid + min_increment
+    2. expected_profit = predicted_market_value - minimum_next_bid
+
+    Rules:
+    - If expected_profit <= 0 → PASS
+    - If expected_profit > 0 → BID
+    - If expected_profit > 5000 → BID aggressively
+
+    Required JSON fields:
+    - agent_name
+    - action
+    - bid_amount
+    - reason
+    - confidence
+  expected_output: >
+    One JSON object with fields:
+    agent_name, action, bid_amount, reason, confidence.
+  agent: investor_buyer_agent
+
+auction_orchestrator_task:
+  description: >
+    You are the auction orchestrator for round {round_number}.
+
+    Auction state before the round:
+    - property_id: {property_id}
+    - starting_price: {starting_price}
+    - current_highest_bid: {current_highest_bid}
+    - previous_leader: {previous_leader}
+    - min_increment: {min_increment}
+
+    Property details:
+    {property_details}
+
+    You are given two bid attempts from task context:
+    1. FamilyBuyer acted first
+    2. InvestorBuyer acted second and may have responded to FamilyBuyer's bid
+
+    Validation rules:
+    - FamilyBuyer's bid is valid only if:
+      - action is "bid" and bid_amount is an integer
+      - bid_amount >= current_highest_bid + min_increment
+    - If FamilyBuyer passes, the live bid remains current_highest_bid.
+    - InvestorBuyer's bid is valid only if:
+      - action is "bid" and bid_amount is an integer
+      - if FamilyBuyer placed a valid bid, then Investor bid_amount >= FamilyBuyer bid_amount + min_increment
+      - otherwise Investor bid_amount >= current_highest_bid + min_increment
+
+    Round resolution rules:
+    - If both pass or both bids are invalid, no new valid bid exists and the auction round ends with no change.
+    - If only one valid bid exists, that bidder leads the round.
+    - If both valid bids exist, InvestorBuyer may lead only if InvestorBuyer's bid is strictly higher than FamilyBuyer's valid bid.
+    - highest_bid must be the highest valid live bid reached by the end of the round.
+    - current_leader must be the bidder who made highest_bid.
+    - bid_attempts must include both bid objects.
+
+    Auction rules:
+    - The auction can run for at most {max_rounds} rounds.
+    - This is round {round_number}.
+    - If no valid new bid is made in a round, the auction ends.
+    - If round_number equals max_rounds, this is the final round.
+
+    Return exactly one JSON object with:
+    - round_number
+    - highest_bid
+    - current_leader
+    - is_auction_over
+    - status_message
+    - bid_attempts
+  expected_output: >
+    One JSON object with fields:
+    round_number, highest_bid, current_leader, is_auction_over, status_message, bid_attempts.
+  agent: auction_orchestrator_agent

@@ -1,0 +1,29 @@
+[project]
+name = "real_estate_auction"
+version = "0.1.0"
+description = "real_estate_auction using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[google-genai,litellm,tools]==1.10.1",
+    "ipykernel>=7.2.0",
+    "matplotlib>=3.10.8",
+    "ollama>=0.6.1",
+    "pandas>=2.3.3",
+    "scikit-learn>=1.7.2",
+    "sentence-transformers>=5.3.0",
+    "xgboost>=3.2.0",
+]
+
+[project.scripts]
+kickoff = "real_estate_auction.main:kickoff"
+run_crew = "real_estate_auction.main:kickoff"
+plot = "real_estate_auction.main:plot"
+run_with_trigger = "real_estate_auction.main:run_with_trigger"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "flow"

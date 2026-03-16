@@ -1,0 +1,50 @@
+auction:
+  min_increment: 1000
+  max_rounds: 3
+  property_to_auction:
+    - p043
+
+buyers:
+  family_buyer:
+    name: FamilyBuyer
+    budget: 160000
+    preferred_locations:
+      - Lozenets
+      - Mladost 3
+      - Geo Milev
+      - Slatina
+      - Krasno Selo
+    preferred_property_types:
+      - apartment
+      - house
+    min_bedrooms: 2
+    min_size_sqm: 75
+    preferred_features:
+      - elevator
+      - terrace
+      - metro
+      - near park
+      - schools nearby
+    strategy: conservative
+
+  investor_buyer:
+    name: InvestorBuyer
+    budget: 140000
+    preferred_locations:
+      - Center
+      - Studentski Grad
+      - Mladost 1
+      - Musagenitsa
+      - Hadji Dimitar
+      - Banishora
+    preferred_property_types:
+      - apartment
+      - studio
+    min_bedrooms: 0
+    min_size_sqm: 45
+    preferred_features:
+      - metro
+      - investment potential
+      - near universities
+      - central location
+    strategy: analytical

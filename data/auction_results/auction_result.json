@@ -1,0 +1,52 @@
+{
+  "property_id": "p043",
+  "winner": "Family Home Buyer Agent",
+  "final_price": 121000,
+  "starting_price": 113000,
+  "history": [
+    {
+      "agent_name": "Family Home Buyer Agent",
+      "action": "bid",
+      "bid_amount": 115000,
+      "reason": "The apartment meets our client's requirements: two bedrooms, partly furnished, near park areas and schools, family-friendly neighborhood, good access to city services, and suitable price for the condition.",
+      "confidence": 0.9
+    },
+    {
+      "agent_name": "Disciplined Investor Agent",
+      "action": "bid",
+      "bid_amount": 117000,
+      "reason": "Expected profit of €3935 is greater than 5000, so bidding aggressively to maximize returns.",
+      "confidence": 1.0
+    },
+    {
+      "agent_name": "Family Home Buyer Agent",
+      "action": "bid",
+      "bid_amount": 118000,
+      "reason": "The property meets our family's needs and is priced within our budget. We want to secure it before other bidders drive the price up.",
+      "confidence": 0.8
+    },
+    {
+      "agent_name": "Disciplined Investor Agent",
+      "action": "bid",
+      "bid_amount": 120000,
+      "reason": "The predicted market value exceeds the current highest bid by a significant margin, indicating potential for profit. Additionally, the location and features of the property are attractive to renters.",
+      "confidence": 0.95
+    },
+    {
+      "agent_name": "Family Home Buyer Agent",
+      "action": "bid",
+      "bid_amount": 121000,
+      "reason": "The apartment's location near a park and good access to city services meets our client's requirements. The property type, size, and condition are also suitable for a family buyer. However, we need to be cautious not to overbid.",
+      "confidence": 0.8
+    },
+    {
+      "agent_name": "Disciplined Investor Agent",
+      "action": "bid",
+      "bid_amount": 121000,
+      "reason": "Our estimated value for this property is around the predicted market value, but we need to consider the minimum next bid. Given that our expected profit is greater than 0, it's a good opportunity to acquire this apartment.",
+      "confidence": 0.85
+    }
+  ],
+  "margin_over_starting": 8000,
+  "total_rounds": 3
+}

@@ -1,0 +1,41 @@
+{
+  "query": "apartment in Geo Milev under 130 000 EUR",
+  "result": {
+    "summary": "We found three apartments in Geo Milev that match your request for an apartment under 130,000 EUR.",
+    "recommendations": [
+      {
+        "property_id": "p043",
+        "title": "Apartment in Geo Milev Near Park",
+        "district": "Geo Milev",
+        "property_type": "apartment",
+        "price_eur": 123000,
+        "size_sqm": 80,
+        "bedrooms": 2,
+        "why_it_matches": "The apartment is in Geo Milev, has two bedrooms, and a price under 130,000 EUR.",
+        "tradeoffs": ""
+      },
+      {
+        "property_id": "p007",
+        "title": "Family Apartment in Geo Milev Near Park and Schools",
+        "district": "Geo Milev",
+        "property_type": "apartment",
+        "price_eur": 127000,
+        "size_sqm": 83,
+        "bedrooms": 2,
+        "why_it_matches": "The apartment is in Geo Milev, has two bedrooms, and a price under 130,000 EUR.",
+        "tradeoffs": ""
+      },
+      {
+        "property_id": "p006",
+        "title": "Quiet One-Bedroom Apartment in Reduta",
+        "district": "Reduta",
+        "property_type": "apartment",
+        "price_eur": 103000,
+        "size_sqm": 70,
+        "bedrooms": 1,
+        "why_it_matches": "The apartment is near Geo Milev park, but not exactly in Geo Milev.",
+        "tradeoffs": "Not exactly in Geo Milev"
+      }
+    ]
+  }
+}
