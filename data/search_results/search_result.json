@@ -1,7 +1,7 @@
 {
   "query": "apartment in Geo Milev under 130 000 EUR",
   "result": {
-    "summary": "We found three apartments in Geo Milev that match your request for an apartment under 130,000 EUR.",
+    "summary": "Based on the provided tool results, three properties in or around Geo Milev match the user's request for an apartment under 130,000 EUR. The first two properties are exact matches with two bedrooms, while the third property is nearby and has one bedroom.",
     "recommendations": [
       {
         "property_id": "p043",
@@ -11,8 +11,8 @@
         "price_eur": 123000,
         "size_sqm": 80,
         "bedrooms": 2,
-        "why_it_matches": "The apartment is in Geo Milev, has two bedrooms, and a price under 130,000 EUR.",
-        "tradeoffs": ""
+        "why_it_matches": "The property is exactly in Geo Milev, meets the budget, and has two bedrooms.",
+        "tradeoffs": "Some preferences may require compromise."
       },
       {
         "property_id": "p007",
@@ -22,8 +22,8 @@
         "price_eur": 127000,
         "size_sqm": 83,
         "bedrooms": 2,
-        "why_it_matches": "The apartment is in Geo Milev, has two bedrooms, and a price under 130,000 EUR.",
-        "tradeoffs": ""
+        "why_it_matches": "The property is exactly in Geo Milev, meets the budget, and has two bedrooms.",
+        "tradeoffs": "Some preferences may require compromise."
       },
       {
         "property_id": "p006",
@@ -33,8 +33,8 @@
         "price_eur": 103000,
         "size_sqm": 70,
         "bedrooms": 1,
-        "why_it_matches": "The apartment is near Geo Milev park, but not exactly in Geo Milev.",
-        "tradeoffs": "Not exactly in Geo Milev"
+        "why_it_matches": "The property is near Geo Milev, meets the budget, and has one bedroom.",
+        "tradeoffs": "Some preferences may require compromise."
       }
     ]
   }

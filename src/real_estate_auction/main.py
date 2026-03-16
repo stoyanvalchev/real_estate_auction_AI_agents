@@ -145,44 +145,84 @@ class PropertyAuctionFlow(Flow[AuctionState]):
         if start != -1 and end != -1:
             raw = raw[start:end + 1]
 
-        try:
-            parsed = PropertySearchResult.model_validate_json(raw)
+        output_dir = Path("data/search_results")
+        output_dir.mkdir(parents=True, exist_ok=True)
+        filepath = output_dir / "search_result.json"
 
-            parsed.recommendations = [
-                PropertyRecommendation(
-                    property_id=prop["property_id"],
-                    title=prop["title"],
-                    district=prop["district"],
-                    property_type=prop["property_type"],
-                    price_eur=prop["price_eur"],
-                    size_sqm=prop["size_sqm"],
-                    bedrooms=prop["bedrooms"],
-                    why_it_matches=rec.why_it_matches,
-                    tradeoffs=rec.tradeoffs,
+        try:
+            raw_dict = json.loads(raw)
+
+            summary = raw_dict.get(
+                "summary",
+                "I found some matching properties."
+            )
+
+            raw_recommendations = raw_dict.get("recommendations", [])
+            if not isinstance(raw_recommendations, list):
+                raw_recommendations = []
+
+            enriched_recommendations = []
+
+            for rec in raw_recommendations:
+                if not isinstance(rec, dict):
+                    continue
+
+                property_id = str(rec.get("property_id", "")).strip().lower()
+                if not property_id:
+                    continue
+
+                prop = self.property_index.get(property_id)
+                if not prop:
+                    print(f"[DEBUG] Property id '{property_id}' not found in property_index.")
+                    continue
+
+                why_it_matches = (
+                    rec.get("why_it_matches")
+                    or rec.get("description")
+                    or "Matches your search criteria."
                 )
-                for rec in parsed.recommendations
-                if (prop := self.property_index.get(rec.property_id.lower()))
-            ]
+
+                tradeoffs = (
+                    rec.get("tradeoffs")
+                    or "Some preferences may require compromise."
+                )
+
+                try:
+                    enriched_recommendations.append(
+                        PropertyRecommendation(
+                            property_id=prop["property_id"],
+                            title=prop["title"],
+                            district=prop["district"],
+                            property_type=prop["property_type"],
+                            price_eur=prop["price_eur"],
+                            size_sqm=prop["size_sqm"],
+                            bedrooms=prop["bedrooms"],
+                            why_it_matches=why_it_matches,
+                            tradeoffs=tradeoffs,
+                        )
+                    )
+                except Exception as item_error:
+                    print(f"[DEBUG] Failed to build PropertyRecommendation for {property_id}: {item_error}")
 
             # Deduplicate recommendations by property_id
             seen_ids = set()
             unique_recs = []
-            for rec in parsed.recommendations:
-                if rec.property_id.lower() not in seen_ids:
-                    seen_ids.add(rec.property_id.lower())
+            for rec in enriched_recommendations:
+                pid = rec.property_id.lower()
+                if pid not in seen_ids:
+                    seen_ids.add(pid)
                     unique_recs.append(rec)
-            parsed.recommendations = unique_recs
 
-            # Save result to file
-            output_dir = Path("data/search_results")
-            output_dir.mkdir(parents=True, exist_ok=True)
-            filepath = output_dir / "search_result.json"
+            parsed = PropertySearchResult(
+                summary=summary,
+                recommendations=unique_recs,
+            )
 
             with open(filepath, "w", encoding="utf-8") as fh:
                 json.dump(
                     {
                         "query": self.state.user_query,
-                        "result": json.loads(parsed.model_dump_json()),
+                        "result": parsed.model_dump(),
                     },
                     fh,
                     indent=2,
@@ -191,10 +231,8 @@ class PropertyAuctionFlow(Flow[AuctionState]):
 
             print(f"\n[Search] Result saved to {filepath}")
 
-            # Store in state
-            self.state.search_result = parsed.model_dump_json()
+            self.state.search_result = parsed.model_dump()
 
-            # Print final output
             print(f"\nSummary: {parsed.summary}")
             for rec in parsed.recommendations:
                 print(
@@ -206,8 +244,19 @@ class PropertyAuctionFlow(Flow[AuctionState]):
 
             return parsed
 
+        except json.JSONDecodeError as e:
+            print("JSON decode error while parsing crew output:")
+            print(e)
+            print("Raw crew output:")
+            print(raw)
+
+            fallback = PropertySearchResult(
+                summary="I found some results, but the model output was not valid JSON.",
+                recommendations=[],
+            )
+
         except ValidationError as e:
-            print("Validation error while parsing crew output:")
+            print("Validation error while building search result:")
             print(e)
             print("Raw crew output:")
             print(raw)
@@ -216,27 +265,6 @@ class PropertyAuctionFlow(Flow[AuctionState]):
                 summary="I found some results, but I could not format them reliably.",
                 recommendations=[],
             )
-
-            output_dir = Path("data/search_results")
-            output_dir.mkdir(parents=True, exist_ok=True)
-            filepath = output_dir / "search_result.json"
-
-            with open(filepath, "w", encoding="utf-8") as fh:
-                json.dump(
-                    {
-                        "query": self.state.user_query,
-                        "result": json.loads(fallback.model_dump_json()),
-                    },
-                    fh,
-                    indent=2,
-                    ensure_ascii=False,
-                )
-
-            self.state.search_result = fallback.model_dump_json()
-            print(f"\n[Search] Result saved to {filepath}")
-            print(f"\nSummary: {fallback.summary}")
-
-            return fallback
 
         except Exception as e:
             print("Unexpected error in execute_search:")
@@ -249,27 +277,22 @@ class PropertyAuctionFlow(Flow[AuctionState]):
                 recommendations=[],
             )
 
-            output_dir = Path("data/search_results")
-            output_dir.mkdir(parents=True, exist_ok=True)
-            filepath = output_dir / "search_result.json"
+        with open(filepath, "w", encoding="utf-8") as fh:
+            json.dump(
+                {
+                    "query": self.state.user_query,
+                    "result": fallback.model_dump(),
+                },
+                fh,
+                indent=2,
+                ensure_ascii=False,
+            )
 
-            with open(filepath, "w", encoding="utf-8") as fh:
-                json.dump(
-                    {
-                        "query": self.state.user_query,
-                        "result": json.loads(fallback.model_dump_json()),
-                    },
-                    fh,
-                    indent=2,
-                    ensure_ascii=False,
-                )
+        self.state.search_result = fallback.model_dump()
+        print(f"\n[Search] Result saved to {filepath}")
+        print(f"\nSummary: {fallback.summary}")
 
-            self.state.search_result = fallback.model_dump_json()
-            print(f"\n[Search] Result saved to {filepath}")
-            print(f"\nSummary: {fallback.summary}")
-
-            return fallback
-        
+        return fallback
     # ---------------- AUCTION BRANCH ----------------
 
     @listen("auction_mode")

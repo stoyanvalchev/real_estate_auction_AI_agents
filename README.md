@@ -1,56 +1,139 @@
-# {{crew_name}} Crew
+[![Owner](https://img.shields.io/badge/Owner-stoyanvalchev-emeraldgreen)](https://github.com/stoyanvalchev)
+![Python](https://img.shields.io/badge/Python-3.10–3.13-blue?logo=python&logoColor=white)
+![CrewAI](https://img.shields.io/badge/Powered%20by-CrewAI-orange)
+![Ollama](https://img.shields.io/badge/Model-llama3.1%3A8b-purple?logo=ollama)
 
-Welcome to the {{crew_name}} Crew project, powered by [crewAI](https://crewai.com). This template is designed to help you set up a multi-agent AI system with ease, leveraging the powerful and flexible framework provided by crewAI. Our goal is to enable your agents to collaborate effectively on complex tasks, maximizing their collective intelligence and capabilities.
+# 🏠 Real Estate Auction AI Agents
+
+An AI-powered system for **real estate property discovery and auction simulation** using autonomous agents. The dataset consists of **50 LLM-generated properties** located in Sofia, Bulgaria.
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Installation](#installation)
+- [Using Local Models with Ollama](#using-local-models-with-ollama)
+- [Running the Project](#running-the-project)
+- [Property Search Mode](#property-search-mode)
+- [Auction Simulation Mode](#auction-simulation-mode)
+
+---
+
+## Overview
+
+This project combines a **RAG pipeline** for natural-language property search with an **AI agent auction simulator**, where buyer agents compete for properties based on their budgets, preferences, and bidding strategies — all running locally via Ollama, with no API costs.
+
+---
 
 ## Installation
 
-Ensure you have Python >=3.10 <3.14 installed on your system. This project uses [UV](https://docs.astral.sh/uv/) for dependency management and package handling, offering a seamless setup and execution experience.
+Ensure you have **Python >=3.10, <3.14** installed. This project uses [UV](https://docs.astral.sh/uv/) for dependency management.
 
-First, if you haven't already, install uv:
+**1. Install UV:**
 
 ```bash
 pip install uv
 ```
 
-Next, navigate to your project directory and install the dependencies:
+**2. Navigate to the project directory and install dependencies:**
 
-(Optional) Lock the dependencies and install them by using the CLI command:
 ```bash
 crewai install
 ```
 
-### Customizing
+> This will lock and install all required dependencies automatically.
 
-**Add your `OPENAI_API_KEY` into the `.env` file**
+---
 
-- Modify `src/real_estate_auction/config/agents.yaml` to define your agents
-- Modify `src/real_estate_auction/config/tasks.yaml` to define your tasks
-- Modify `src/real_estate_auction/crew.py` to add your own logic, tools and specific args
-- Modify `src/real_estate_auction/main.py` to add custom inputs for your agents and tasks
+## Using Local Models with Ollama
+
+This project runs entirely on the **local Ollama model `llama3.1:8b`**, meaning no API keys are required and the system works fully offline.
+
+### 1. Install Ollama
+
+Download and install Ollama from [ollama.com](https://ollama.com), then verify the installation:
+
+```bash
+ollama --version
+```
+
+### 2. Pull the Required Model
+
+```bash
+ollama pull llama3.1:8b
+```
+
+> This may take a few minutes depending on your connection speed.
+
+### Hardware Requirements
+
+| Spec | Requirement |
+|------|-------------|
+| RAM (minimum) | 8 GB |
+| RAM (recommended) | 16 GB |
+| GPU | Optional — improves performance significantly |
+| CPU | Supported, but slower |
+
+---
 
 ## Running the Project
 
-To kickstart your flow and begin execution, run this from the root folder of your project:
+From the root folder of your project, run:
 
 ```bash
 crewai run
 ```
 
-This command initializes the real_estate_auction Flow as defined in your configuration.
+You will be prompted to choose a mode:
 
-This example, unmodified, will run the create a `report.md` file with the output of a research on LLMs in the root folder.
+| Input | Mode | Description |
+|-------|------|-------------|
+| `s` or `search` | **Property Search** | Find properties using natural language |
+| `a` or `auction` | **Auction Simulation** | AI buyer agents compete for a selected property |
 
-## Understanding Your Crew
+---
 
-The real_estate_auction Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
+## Property Search Mode
 
-## Support
+Describe the property you are looking for in plain English and the system will retrieve matching listings using the RAG pipeline.
 
-For support, questions, or feedback regarding the {{crew_name}} Crew or crewAI.
+**Example query:**
 
-- Visit our [documentation](https://docs.crewai.com)
-- Reach out to us through our [GitHub repository](https://github.com/joaomdmoura/crewai)
-- [Join our Discord](https://discord.com/invite/X4JWnZnxPb)
-- [Chat with our docs](https://chatg.pt/DWjSBZn)
+```
+apartment in Geo Milev under 130 000 EUR
+```
 
-Let's create wonders together with the power and simplicity of crewAI.
+Results are returned with explanations and saved to:
+
+```
+data/search_results/search_result.json
+```
+
+---
+
+## Auction Simulation Mode
+
+In Auction Mode, AI buyer agents evaluate a selected property and place competitive bids based on their individual budgets, preferences, and strategies.
+
+### Configuration
+
+Auction parameters can be customised in:
+
+```
+src/real_estate_auction/crews/auction_crew/config/auction.yaml
+```
+
+| Parameter | Description |
+|-----------|-------------|
+| `min_increment` | Minimum bid increase between rounds |
+| `max_rounds` | Maximum number of auction rounds |
+| `property_to_auction` | ID or name of the property being auctioned |
+
+### Results
+
+The full auction history is saved to:
+
+```
+data/auction_results/auction_result.json
+```
